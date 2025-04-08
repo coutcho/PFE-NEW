@@ -1,0 +1,34 @@
+.btn-primary {
+    background-color: black !important; /* Change to your desired color */
+    color: white !important; /* Ensure text is visible */
+    border: none !important;
+    padding: 10px 20px;
+    border-radius: 5px; /* Optional: Adds rounded corners */
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out !important;
+  }
+  
+  .btn-primary:hover {
+    background-color: #198754 !important; /* Darker shade on hover */
+  }
+
+  .signup {
+    background-color: #198754 !important;
+  }
+  /* Make the navbar sticky */
+.navbar {
+  position: sticky !important;
+  top: 0; /* Stick it to the top of the viewport */
+  z-index: 1000; /* Ensure it stays above other content */
+}
+
+
+.navbar.scrolled {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important; /* Subtle shadow for depth */
+  border-radius: 0 !important;
+ }
+ 
+
+
+  

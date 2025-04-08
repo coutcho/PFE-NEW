@@ -1,0 +1,102 @@
+/* Custom styles for the admin dashboard */
+
+/* General styles */
+body {
+    background-color: #f8f9fa;
+  }
+  
+  /* Stat cards */
+  .stat-card {
+    transition: transform 0.2s;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Property cards */
+  .property-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  
+  .property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+  }
+  
+  /* Agent cards */
+  .agent-card {
+    transition: transform 0.2s;
+  }
+  
+  .agent-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .agent-avatar img {
+    border: 3px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+  }
+  
+  /* Message list */
+  .message-item {
+    transition: background-color 0.2s;
+  }
+  
+  .message-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  /* Custom colors for stat cards */
+  .bg-primary-subtle {
+    background-color: rgba(13, 110, 253, 0.1);
+  }
+  
+  .bg-success-subtle {
+    background-color: rgba(25, 135, 84, 0.1);
+  }
+  
+  .bg-warning-subtle {
+    background-color: rgba(255, 193, 7, 0.1);
+  }
+  
+  /* Card styles */
+  .card {
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  
+  .card-header {
+    padding: 1.25rem;
+  }
+  
+  /* Table styles */
+  .table {
+    margin-bottom: 0;
+  }
+  
+  .table th {
+    font-weight: 600;
+    border-top: none;
+  }
+  
+  .table td {
+    vertical-align: middle;
+  }
+  
+  /* Map container */
+  .leaflet-container {
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }

@@ -1,0 +1,336 @@
+/* Import Bootstrap CSS */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Custom styles */
+.property-gallery {
+  height: 500px;
+  position: relative;
+}
+
+.property-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-nav-button {
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  padding: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.gallery-nav-button:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.gallery-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0;
+}
+
+.gallery-dot.active {
+  background: rgba(255, 255, 255, 1);
+}
+
+.feature-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #0d6efd;
+  margin-right: 8px;
+}
+.agent{
+    position: sticky !important;
+    top: 80px; /* Stick it to the top of the viewport */
+   
+}
+/* Set max height for modal and make it responsive */
+.modal-content {
+  max-height: 80vh; /* 80% of the viewport height */
+  overflow-y: auto; /* Scroll if content overflows */
+  border-radius: 1rem; /* Rounded corners for aesthetics */
+}
+
+/* Adjust height for smaller screens */
+@media (max-width: 768px) {
+  .modal-content {
+    max-height: 70vh; /* Reduce height for mobile view */
+  }
+}
+.scrollable-content {
+  overflow-y: auto;
+  max-height: 80vh; /* Adjust this value as needed */
+}
+
+.modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: white; /* Ensures content doesn’t show through */
+  border-bottom: 1px solid #dee2e6; /* Optional: adds visual separation */
+}
+
+
+/* Main Gallery Styling */
+.gallery-container {
+  width: 100% !important;
+  position: relative !important;
+}
+
+.main-image-container {
+  position: relative !important;
+  width: 100% !important;
+  height: 70vh !important;
+  background-color: #000 !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.main-image {
+  width: 100% !important;
+  height: 100% !important;
+  background-size: cover !important;
+  background-position: center !important;
+  cursor: pointer !important;
+  transition: transform 0.3s ease !important;
+}
+
+.main-image:hover {
+  transform: scale(1.02) !important;
+}
+
+/* Navigation Buttons */
+.nav-button {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  z-index: 10 !important;
+}
+
+.nav-button:hover {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  transform: translateY(-50%) scale(1.1) !important;
+}
+
+.prev-button {
+  left: 20px !important;
+}
+
+.next-button {
+  right: 20px !important;
+}
+
+/* Image Counter */
+.image-counter {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: white !important;
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  z-index: 10 !important;
+}
+
+/* Dots Navigation */
+.dots-container {
+  position: absolute !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  gap: 8px !important;
+  z-index: 10 !important;
+}
+
+.dot {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+}
+
+.dot:hover {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.dot.active {
+  background-color: white !important;
+  transform: scale(1.2) !important;
+}
+
+/* Fullscreen Overlay */
+.fullscreen-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.95) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 1050 !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+.fullscreen-content {
+  position: relative !important;
+  width: 90% !important;
+  height: 90% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.fullscreen-image {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  border-radius: 4px !important;
+}
+
+.close-button {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  z-index: 1060 !important;
+}
+
+.close-button:hover {
+  background-color: rgba(255, 0, 0, 0.8) !important;
+  transform: scale(1.1) !important;
+}
+
+.fullscreen-nav {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 64px !important;
+  height: 64px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  z-index: 1060 !important;
+}
+
+.fullscreen-nav:hover {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  transform: translateY(-50%) scale(1.1) !important;
+}
+
+.prev-fullscreen {
+  left: 30px !important;
+}
+
+.next-fullscreen {
+  right: 30px !important;
+}
+
+.fullscreen-counter {
+  position: absolute !important;
+  bottom: 30px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 20px !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  z-index: 1060 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-image-container {
+    height: 50vh !important;
+  }
+  
+  .nav-button {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .fullscreen-nav {
+    width: 50px !important;
+    height: 50px !important;
+  }
+  
+  .prev-fullscreen {
+    left: 15px !important;
+  }
+  
+  .next-fullscreen {
+    right: 15px !important;
+  }
+  
+  .dot {
+    width: 10px !important;
+    height: 10px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-image-container {
+    height: 40vh !important;
+  }
+  
+  .nav-button {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .image-counter {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+  }
+  
+  .fullscreen-counter {
+    font-size: 14px !important;
+    padding: 6px 12px !important;
+  }
+}
+.leaflet-container{
+  z-index: 0;
+}
