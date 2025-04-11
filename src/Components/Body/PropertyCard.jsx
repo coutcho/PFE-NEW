@@ -37,6 +37,9 @@ const PropertyCard = ({ property, onClick }) => {
     return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
+  // Check if property type is bureau or appartment to show floor level
+  const showFloorLevel = property.type === "bureau" || property.type === "appartement";
+
   return (
     <motion.div
       className="card pointer h-100"
@@ -73,21 +76,21 @@ const PropertyCard = ({ property, onClick }) => {
           <span>
             <FaBed className="me-1" /> {property.bedrooms || 0} chambre
           </span>
-          {property.bathrooms !== undefined && property.bathrooms !== null ? (
+          {showFloorLevel ? (
             <span>
-              <FaBath className="me-1" /> {property.bathrooms} baths
+              <FaBuilding className="me-1" /> 
+              {property.etage !== undefined && property.etage !== null ? `${property.etage}${property.etage === 1 ? "er" : "ème"}` : "N/A"}
             </span>
           ) : (
             <span>
-              <FaBuilding className="me-1" /> 
-              {property.etage !== undefined && property.etage !== null ? `${property.etage}${property.etage === 1 ? "er" : "ème"}` : "N/A"} etg
+              <FaBath className="me-1" /> {property.bathrooms ?? 0} bains
             </span>
           )}
           <span>
             <FaRuler className="me-1" /> {(property.square_footage || 0).toLocaleString('fr-DZ')} m²
           </span>
           <span>
-            <FaChair className="me-1" /> {(property.equipped ?? false) ? 'oui' : 'non'}
+          <FaChair className="me-1" /> {property.equipped === true || property.equipe === true ? 'oui' : 'non'}
           </span>
         </div>
         <p className="card-text text-muted">{property.location || 'Unknown Location'}</p>

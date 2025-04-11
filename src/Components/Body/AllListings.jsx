@@ -34,7 +34,11 @@ function AllListings() {
         setFetchedProperties(data);
 
         const isEquippedParam = queryParams.get('equipped');
-        const isEquipped = isEquippedParam === 'true' ? true : isEquippedParam === 'false' ? false : null;
+        const isEquipped = isEquippedParam === 'true' 
+          ? true 
+          : isEquippedParam === 'false' 
+            ? false 
+            : null;
 
         const filters = {
           minPrice: parseInt(queryParams.get('minPrice')) || 0,
@@ -66,24 +70,28 @@ function AllListings() {
   const applyFilters = (properties, filters) => {
     let filtered = [...properties];
 
-    const cleanText = (text) => text.replace(/[^\w\s]/g, '').toLowerCase().split(/\s+/).filter(word => word);
+    const cleanText = (text) => text
+      .replace(/[^\w\s]/g, '')
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(word => word);
 
     if (filters.selectedWilaya) {
-      const filterWords = cleanText(filters.selectedWilaya);
-      filtered = filtered.filter((p) => {
-        const propertyWords = cleanText(p.location || '');
-        const matches = filterWords.some(filterWord =>
-          propertyWords.some(propWord => propWord.includes(filterWord))
-        );
-        console.log(
-          `Location: "${p.location}" matches any of "${filters.selectedWilaya}" -> ${matches}`
-        );
+      const searchPhrases = filters.selectedWilaya
+        .split(',')
+        .map(phrase => phrase.trim().toLowerCase())
+        .filter(phrase => phrase.length > 0);
+
+      filtered = filtered.filter(p => {
+        const locationText = (p.location || '').toLowerCase();
+        const matches = searchPhrases.some(phrase => locationText.includes(phrase));
+        console.log(`Location: "${p.location}" matches any of "${filters.selectedWilaya}" -> ${matches}`);
         return matches;
       });
     }
 
     if (filters.minPrice > 0) {
-      filtered = filtered.filter((p) => {
+      filtered = filtered.filter(p => {
         const price = p.price || 0;
         const matches = price >= filters.minPrice;
         console.log(`Price: ${price} >= ${filters.minPrice} -> ${matches}`);
@@ -92,7 +100,7 @@ function AllListings() {
     }
 
     if (filters.maxPrice !== Infinity) {
-      filtered = filtered.filter((p) => {
+      filtered = filtered.filter(p => {
         const price = p.price || 0;
         const matches = price <= filters.maxPrice;
         console.log(`Price: ${price} <= ${filters.maxPrice} -> ${matches}`);
@@ -101,7 +109,7 @@ function AllListings() {
     }
 
     if (filters.minSurface > 0) {
-      filtered = filtered.filter((p) => {
+      filtered = filtered.filter(p => {
         const sf = p.square_footage || 0;
         const matches = sf >= filters.minSurface;
         console.log(`Square Footage: ${sf} >= ${filters.minSurface} -> ${matches}`);
@@ -110,7 +118,7 @@ function AllListings() {
     }
 
     if (filters.maxSurface !== Infinity) {
-      filtered = filtered.filter((p) => {
+      filtered = filtered.filter(p => {
         const sf = p.square_footage || 0;
         const matches = sf <= filters.maxSurface;
         console.log(`Square Footage: ${sf} <= ${filters.maxSurface} -> ${matches}`);
@@ -119,7 +127,7 @@ function AllListings() {
     }
 
     if (filters.minRooms > 0) {
-      filtered = filtered.filter((p) => {
+      filtered = filtered.filter(p => {
         const beds = p.bedrooms || 0;
         const matches = beds >= filters.minRooms;
         console.log(`Bedrooms: ${beds} >= ${filters.minRooms} -> ${matches}`);
@@ -128,7 +136,7 @@ function AllListings() {
     }
 
     if (filters.maxRooms !== Infinity) {
-      filtered = filtered.filter((p) => {
+      filtered = filtered.filter(p => {
         const beds = p.bedrooms || 0;
         const matches = beds <= filters.maxRooms;
         console.log(`Bedrooms: ${beds} <= ${filters.maxRooms} -> ${matches}`);
@@ -137,7 +145,7 @@ function AllListings() {
     }
 
     if (filters.propertyType) {
-      filtered = filtered.filter((p) => {
+      filtered = filtered.filter(p => {
         const type = (p.type || '').toLowerCase();
         const matches = type === filters.propertyType.toLowerCase();
         console.log(`Type: "${type}" === "${filters.propertyType}" -> ${matches}`);
@@ -152,7 +160,7 @@ function AllListings() {
       };
       const status = statusMap[filters.engagementType];
       if (status) {
-        filtered = filtered.filter((p) => {
+        filtered = filtered.filter(p => {
           const propStatus = (p.status || '').toLowerCase();
           const filterStatus = status.toLowerCase();
           const matches = propStatus === filterStatus;
@@ -163,7 +171,7 @@ function AllListings() {
     }
 
     if (filters.isEquipped !== null) {
-      filtered = filtered.filter((p) => {
+      filtered = filtered.filter(p => {
         const propEquipped = p.equipped === true || p.equipped === 'oui';
         const matches = propEquipped === filters.isEquipped;
         console.log(`Equipped: ${propEquipped} === ${filters.isEquipped} -> ${matches}`);
@@ -188,7 +196,10 @@ function AllListings() {
       
       <div className="d-flex h-100 mt-5">
         {/* Listings Panel */}
-        <div className="listings-panel bg-white shadow-sm" style={{ width: '600px', height: 'calc(100vh - 56px)', overflowY: 'auto' }}>
+        <div 
+          className="listings-panel bg-white shadow-sm" 
+          style={{ width: '600px', height: 'calc(100vh - 56px)', overflowY: 'auto' }}
+        >
           {loading ? (
             <div className="d-flex justify-content-center align-items-center h-100">
               <div className="spinner-border text-primary" role="status">
@@ -215,7 +226,10 @@ function AllListings() {
         {/* Map Container */}
         <div className="flex-grow-1 position-relative">
           <div className="position-absolute top-0 start-0 w-100 h-100">
-            <AllMap properties={properties} selectedProperty={selectedProperty} />
+            <AllMap 
+              properties={properties} 
+              selectedProperty={selectedProperty} 
+            />
           </div>
         </div>
       </div>

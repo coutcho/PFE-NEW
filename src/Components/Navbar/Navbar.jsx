@@ -140,7 +140,8 @@ export default function Navbar() {
       setIsAdmin(false);
       setUserRole(null);
       setHasUnreadMessages(false);
-      navigate("/");
+       window.location.href = '/'; // This reloads the whole page
+      //navigate('/');
     } catch (error) {
       console.error("Error during logout:", error);
       localStorage.removeItem("authToken");
@@ -148,7 +149,9 @@ export default function Navbar() {
       setIsAdmin(false);
       setUserRole(null);
       setHasUnreadMessages(false);
-      navigate("/");
+       window.location.href = '/'; // This reloads the whole page
+      //navigate('/');
+
     }
   };
 
@@ -255,7 +258,7 @@ export default function Navbar() {
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/home-value">
-                    Home Value
+                    Estimation
                   </Link>
                 </li>
                 <li className="nav-item">

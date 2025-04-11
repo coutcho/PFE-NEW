@@ -20,12 +20,14 @@ function NavbarD() {
       // Clear the token from localStorage
       localStorage.removeItem("authToken");
       // Redirect to the homepage or login page
-      navigate("/");
+      window.location.href = '/'; // This reloads the whole page 
+      //navigate("/");
     } catch (error) {
       console.error("Error during logout:", error);
       // Even if the API call fails, clear the token and redirect
       localStorage.removeItem("authToken");
-      navigate("/");
+      //navigate("/");
+      window.location.href = '/'; // This reloads the whole page 
     }
   };
 

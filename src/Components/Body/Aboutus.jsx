@@ -1,6 +1,6 @@
 import React from 'react';
-// Remove the problematic import since it's not being used in the component
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Building2, Users, Handshake, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Aboutus = () => {
   return (
@@ -60,96 +60,81 @@ const Aboutus = () => {
               <p className="lead text-muted mb-4">
               Nous sommes fiers de notre connaissance approfondie du marché local, de notre engagement envers l'excellence et de notre approche personnalisée pour répondre aux besoins de chaque client.
               </p>
-              <button className="btn btn-primary btn-lg px-4">Learn More</button>
+              
             </div>
           </div>
         </div>
       </section>
       
       {/* Why Us Section */}
-      <section className="py-5">
+      <section className="py-5" style={{ backgroundColor: '#f8f9fa' }}>
         <div className="container text-center">
-          <h2 className="display-5 fw-bold mb-4">Pourquoi Nous ?</h2>
+          <h2 className="display-5 fw-bold mb-4">Pourquoi Nous Choisir ?</h2>
           <p className="lead mb-5 mx-auto" style={{ maxWidth: '700px' }}>
-            Best real estate agents you will ever see in your life. If you encounter any problems do not hesitate to knock our agents.
+            Notre équipe d'agents immobiliers expérimentés est à votre service pour vous accompagner dans chaque étape de votre projet immobilier, avec professionnalisme et dévouement.
           </p>
           
           <div className="row g-4">
             {/* Card 1 */}
             <div className="col-lg-3 col-md-6">
-              <div className="card h-100 border-0 rounded-4 bg-light">
+              <div className="card h-100 border-0 rounded-4 shadow-sm hover-shadow transition-300">
                 <div className="card-body py-5 text-center">
                   <div className="d-inline-flex justify-content-center align-items-center bg-primary rounded-circle p-3 mb-4" style={{ width: '70px', height: '70px' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M3 3H21V21H3V3Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M9 13V17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M15 7V17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                    <Building2 size={24} color="white" />
                   </div>
-                  <h4 className="fw-bold mb-2">Large gamme de propriétés</h4>
-                  <p className="text-muted">Benefits</p>
+                  <h4 className="fw-bold mb-3">Large Gamme de Propriétés</h4>
+                  <p className="text-muted">Découvrez notre catalogue diversifié de biens immobiliers adaptés à tous les budgets et styles de vie.</p>
                 </div>
               </div>
             </div>
             
             {/* Card 2 */}
             <div className="col-lg-3 col-md-6">
-              <div className="card h-100 border-0 rounded-4" style={{ backgroundColor: '#e8f9f5' }}>
+              <div className="card h-100 border-0 rounded-4 shadow-sm hover-shadow transition-300">
                 <div className="card-body py-5 text-center">
-                  <div className="d-inline-flex justify-content-center align-items-center rounded-circle p-3 mb-4" style={{ width: '70px', height: '70px', backgroundColor: '#808080' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                  <div className="d-inline-flex justify-content-center align-items-center rounded-circle p-3 mb-4" style={{ width: '70px', height: '70px', backgroundColor: '#4a6fa5' }}>
+                    <Users size={24} color="white" />
                   </div>
-                  <h4 className="fw-bold mb-2">Équipe primée</h4>
-                  <p className="text-muted">Support</p>
+                  <h4 className="fw-bold mb-3">Équipe d'Experts professionnelle</h4>
+                  <p className="text-muted">Nos conseillers immobiliers certifiés vous offrent une expertise locale inégalée et un service personnalisé.</p>
                 </div>
               </div>
             </div>
             
             {/* Card 3 */}
             <div className="col-lg-3 col-md-6">
-              <div className="card h-100 border-0 rounded-4" style={{ backgroundColor: '#fff5f2' }}>
+              <div className="card h-100 border-0 rounded-4 shadow-sm hover-shadow transition-300">
                 <div className="card-body py-5 text-center">
-                  <div className="d-inline-flex justify-content-center align-items-center rounded-circle p-3 mb-4" style={{ width: '70px', height: '70px', backgroundColor: '#ff7b54' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2V6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M12 18V22" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M4.93 4.93L7.76 7.76" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M16.24 16.24L19.07 19.07" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M2 12H6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M18 12H22" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M4.93 19.07L7.76 16.24" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M16.24 7.76L19.07 4.93" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                  <div className="d-inline-flex justify-content-center align-items-center rounded-circle p-3 mb-4" style={{ width: '70px', height: '70px', backgroundColor: '#2b4c7e' }}>
+                    <Handshake size={24} color="white" />
                   </div>
-                  <h4 className="fw-bold mb-2">Service personnalisé</h4>
-                  <p className="text-muted">Interest</p>
+                  <h4 className="fw-bold mb-3">Accompagnement Sur Mesure</h4>
+                  <p className="text-muted">Nous adaptons nos services à vos besoins spécifiques pour une expérience immobilière sans stress.</p>
                 </div>
               </div>
             </div>
             
             {/* Card 4 */}
             <div className="col-lg-3 col-md-6">
-              <div className="card h-100 border-0 rounded-4 bg-light">
+              <div className="card h-100 border-0 rounded-4 shadow-sm hover-shadow transition-300">
                 <div className="card-body py-5 text-center">
-                  <div className="d-inline-flex justify-content-center align-items-center bg-primary rounded-circle p-3 mb-4" style={{ width: '70px', height: '70px' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M9 22V12H15V22" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                  <div className="d-inline-flex justify-content-center align-items-center rounded-circle p-3 mb-4" style={{ width: '70px', height: '70px', backgroundColor: '#4a6fa5' }}>
+                    <Home size={24} color="white" />
                   </div>
-                  <h4 className="fw-bold mb-2">HOMES THAT MATCH</h4>
-                  <p className="text-muted">Lifestyle</p>
+                  <h4 className="fw-bold mb-3">Biens Adaptés à Votre Style de Vie</h4>
+                  <p className="text-muted">Nous sélectionnons des propriétés qui correspondent parfaitement à vos critères et aspirations.</p>
                 </div>
               </div>
             </div>
           </div>
+
+          <div className="mt-5 pt-3">
+            <Link to="/contact" className="btn btn-primary btn-lg px-4 py-2">Nous Contacter</Link>
+          </div>
         </div>
       </section>
       
-      {/* Footer would go here in a real app */}
+      {/* Rest of the component remains unchanged */}
     </div>
   );
 };

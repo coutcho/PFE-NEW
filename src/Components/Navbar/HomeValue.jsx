@@ -52,6 +52,12 @@ function HomeValueHero() {
       return;
     }
 
+    // New validation: check if images are uploaded
+    if (selectedFiles.length === 0) {
+      showFeedback('Veuillez télécharger au moins une image de votre propriété.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('address', address);
     selectedFiles.forEach((file) => {

@@ -63,6 +63,7 @@ const NewestListings = () => {
       }
     };
     fetchProperties();
+    
   }, []);
 
   // Handle keyboard navigation for accessibility

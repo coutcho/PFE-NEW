@@ -52,13 +52,14 @@ function PrivateRoute({ children }) {
 }
 
 // Layout component
-function Layout({ children, onSignInTrigger }) {
+function Layout({ children, onSignInTrigger, showFooter = true }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
   return (
     <>
       {!isAdminRoute && <Navbar onSignInTrigger={onSignInTrigger} />}
       {children}
+      {!isAdminRoute && showFooter && <Footer />}
     </>
   );
 }
@@ -67,6 +68,23 @@ function Layout({ children, onSignInTrigger }) {
 export default function App() {
   const [openSignIn, setOpenSignIn] = useState(null);
 
+  // Function to determine if footer should be shown based on route and role
+  const shouldShowFooter = (pathname) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return true; // Show footer if no token (not logged in)
+    try {
+      const { role } = jwtDecode(token);
+      // Hide footer only in /inbox for "expert" or "agent" roles
+      if (pathname === "/inbox" && (role === "expert" || role === "agent")) {
+        return false;
+      }
+      return true; // Show footer for all other cases
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return true; // Show footer if token is invalid
+    }
+  };
+
   return (
     <FavoritesProvider>
       <Router>
@@ -74,7 +92,7 @@ export default function App() {
           <Route
             path="/"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/")}>
                 <div className="min-h-screen flex flex-col justify-center items-center text-center">
                   <main className="w-full max-w-7xl p-4">
                     <h1 className="text-4xl font-bold mb-6">Rechercher où habiter!</h1>
@@ -88,14 +106,13 @@ export default function App() {
                   </div>
                   <Annonces />
                 </div>
-                <Footer />
               </Layout>
             }
           />
           <Route
             path="/listings"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/listings")}>
                 <AllListings />
               </Layout>
             }
@@ -103,7 +120,7 @@ export default function App() {
           <Route
             path="/listing/:id"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/listing/:id")}>
                 <ListingPage />
               </Layout>
             }
@@ -112,9 +129,8 @@ export default function App() {
             path="/favorites"
             element={
               <AuthenticatedRoute>
-                <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+                <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/favorites")}>
                   <FavoritesPage />
-                  <Footer />
                 </Layout>
               </AuthenticatedRoute>
             }
@@ -122,45 +138,40 @@ export default function App() {
           <Route
             path="/inbox"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/inbox")}>
                 <Chat />
-                <Footer />
               </Layout>
             }
           />
           <Route
             path="/profile"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/profile")}>
                 <Profile />
-                <Footer />
               </Layout>
             }
           />
           <Route
             path="/contact"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/contact")}>
                 <Contact />
-                <Footer />
               </Layout>
             }
           />
           <Route
             path="/home-value"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/home-value")}>
                 <HomeValue />
-                <Footer />
               </Layout>
             }
           />
           <Route
             path="/about-us"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/about-us")}>
                 <Aboutus />
-                <Footer />
               </Layout>
             }
           />
@@ -175,7 +186,7 @@ export default function App() {
           <Route
             path="/reset-password"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("/reset-password")}>
                 <ResetPasswordModal
                   show={true}
                   onClose={() => window.history.pushState({}, "", "/")}
@@ -193,7 +204,7 @@ export default function App() {
           <Route
             path="*"
             element={
-              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)}>
+              <Layout onSignInTrigger={(fn) => setOpenSignIn(() => fn)} showFooter={shouldShowFooter("*")}>
                 <Navigate to="/" replace />
               </Layout>
             }

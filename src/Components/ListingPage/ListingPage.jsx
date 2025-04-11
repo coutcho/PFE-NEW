@@ -4,7 +4,6 @@ import PropertyGallery from './PropertyGallery';
 import PropertyDetails from './PropertyDetails';
 import PropertyMap from './PropertyMap';
 import ContactAgent from './ContactAgent';
-import Footer from '../Footer/Footer.jsx';
 import './ListingCSS.css';
 
 function ListingPage() {
@@ -71,9 +70,7 @@ function ListingPage() {
           </div>
         </main>
       </div>
-      <div>
-        <Footer />
-      </div>
+     
     </>
   );
 }

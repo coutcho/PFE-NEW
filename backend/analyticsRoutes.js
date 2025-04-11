@@ -391,7 +391,7 @@ router.get('/newest-listings', async (req, res) => {
 router.get('/properties/in-algiers', authenticateToken, isAdmin, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, name, location, price, lat, long
+      `SELECT id, title, location, price, lat, long
        FROM properties
        WHERE LOWER(location) LIKE '%algiers%'`
     );
@@ -407,4 +407,48 @@ router.get('/properties/in-algiers', authenticateToken, isAdmin, async (req, res
     res.status(500).json({ error: 'Failed to fetch Algiers properties', details: err.message });
   }
 });
+
+// GET /api/properties/pending
+router.get('/properties/pending', authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        p.id, 
+        p.title, 
+        p.location, 
+        p.price, 
+        p.images_path, 
+        p.status, 
+        p.created_at, 
+        u.fullname AS agent_name
+      FROM 
+        properties p
+      LEFT JOIN 
+        users u ON p.user_id = u.id
+      WHERE 
+        p.status = 'Pending'
+      ORDER BY 
+        p.created_at DESC
+    `);
+
+    // Format the response to ensure images_path is an array
+    const formattedResults = result.rows.map(property => ({
+      id: property.id,
+      title: property.title,
+      location: property.location,
+      price: property.price,
+      images_path: typeof property.images_path === 'string' ? JSON.parse(property.images_path) : property.images_path || [],
+      status: property.status,
+      created_at: property.created_at,
+      agent_name: property.agent_name || 'Unknown agent',
+    }));
+
+    res.json(formattedResults);
+  } catch (err) {
+    console.error('Error fetching pending properties:', err.stack);
+    res.status(500).json({ error: 'Failed to fetch pending properties', details: err.message });
+  }
+});
+
+
 export default router;
