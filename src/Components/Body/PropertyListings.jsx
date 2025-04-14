@@ -6,7 +6,6 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import '../../App.css';
 import { FaChevronLeft, FaChevronRight, FaStar } from 'react-icons/fa';
-// Import the external CSS file
 import './CarouselStyles.css';
 
 const PropertyListings = () => {
@@ -32,7 +31,10 @@ const PropertyListings = () => {
           throw new Error('Failed to fetch properties');
         }
         const data = await response.json();
-        setProperties(data);
+        
+        // Filter out properties with "Sold" status
+        const filteredProperties = data.filter(property => property.status !== 'Sold');
+        setProperties(filteredProperties);
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -160,7 +162,6 @@ const PropertyListings = () => {
     <div className="container py-5">
       <div className="d-flex justify-content-center align-items-center mb-4">
         <h2>Les Plus Populaires</h2>
-        {/* Removed the Next and Previous buttons */}
       </div>
       
       <div className="row justify-content-center">
@@ -189,8 +190,6 @@ const PropertyListings = () => {
               </div>
             ))}
           </Slider>
-          
-          {/* Removed the "Showing X of Y properties" counter */}
         </div>
       </div>
     </div>

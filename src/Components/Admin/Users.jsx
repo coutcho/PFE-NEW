@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 
 function Users() {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [joinDate, setJoinDate] = useState('');
+  const [role, setRole] = useState('');
 
   const API_BASE_URL = 'http://localhost:3001/api/users';
   const token = localStorage.getItem('authToken');
 
-  // Fetch users on mount
+  // Fetch Users on Component Mount
   useEffect(() => {
     const fetchUsers = async () => {
       if (!token) {
@@ -34,6 +39,7 @@ function Users() {
         const data = await response.json();
         const filteredUsers = data.filter(user => ['admin', 'expert', 'agent'].includes(user.role));
         setUsers(filteredUsers);
+        setFilteredUsers(filteredUsers);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -43,6 +49,38 @@ function Users() {
     fetchUsers();
   }, [token]);
 
+  // Filter Users Based on Search Term and Role
+  useEffect(() => {
+    let result = users;
+
+    if (searchTerm) {
+      result = result.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (roleFilter) {
+      result = result.filter(user => user.role === roleFilter);
+    }
+
+    setFilteredUsers(result);
+  }, [users, searchTerm, roleFilter]);
+
+  // Sync Form Fields with Editing User
+  useEffect(() => {
+    if (editingUser) {
+      const formattedJoinDate = editingUser.joinDate
+        ? new Date(editingUser.joinDate).toISOString().split('T')[0]
+        : '';
+      setJoinDate(formattedJoinDate);
+      setRole(editingUser.role || '');
+    } else {
+      setJoinDate('');
+      setRole('');
+    }
+  }, [editingUser]);
+
+  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!token) {
@@ -54,10 +92,10 @@ function Users() {
     const userData = {
       name: formData.get('name'),
       email: formData.get('email'),
-      role: formData.get('role'),
+      role: role,
       phone: formData.get('phone'),
-      joinDate: formData.get('joinDate') || new Date().toISOString().split('T')[0],
-      password: formData.get('password'), // Envoyer le mot de passe pour l'ajout et l'édition (optionnel pour l'édition)
+      joinDate: joinDate || new Date().toISOString().split('T')[0],
+      password: formData.get('password'),
     };
 
     try {
@@ -108,11 +146,13 @@ function Users() {
     }
   };
 
+  // Handle Edit Button Click
   const handleEdit = (user) => {
     setEditingUser(user);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Handle Delete Button Click
   const handleDelete = async (id) => {
     if (!token) {
       setError('Veuillez vous connecter en tant qu\'administrateur pour supprimer des utilisateurs');
@@ -140,6 +180,7 @@ function Users() {
     }
   };
 
+  // Get Badge Color Based on Role
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case 'admin':
@@ -153,10 +194,12 @@ function Users() {
     }
   };
 
+  // Render Loading, Error, or Unauthorized States
   if (!token) return <div>Veuillez vous connecter en tant qu\'administrateur pour gérer les utilisateurs.</div>;
   if (loading) return <div>Chargement des utilisateurs...</div>;
   if (error) return <div>Erreur: {error}</div>;
 
+  // Render the Component
   return (
     <div className="container-fluid mt-4">
       <h1 className="mb-4">Utilisateurs</h1>
@@ -200,7 +243,7 @@ function Users() {
                     className="form-control"
                     id="password"
                     name="password"
-                    required={!editingUser} // Requis uniquement pour les nouveaux utilisateurs
+                    required={!editingUser}
                   />
                 </div>
                 <div className="mb-3">
@@ -220,7 +263,8 @@ function Users() {
                     className="form-select"
                     id="role"
                     name="role"
-                    defaultValue={editingUser?.role || ''}
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
                     required
                   >
                     <option value="">Sélectionner un rôle...</option>
@@ -236,7 +280,8 @@ function Users() {
                     className="form-control"
                     id="joinDate"
                     name="joinDate"
-                    defaultValue={editingUser?.joinDate}
+                    value={joinDate}
+                    onChange={(e) => setJoinDate(e.target.value)}
                     required
                   />
                 </div>
@@ -262,7 +307,35 @@ function Users() {
         <div className="col-md-9">
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title mb-4">Liste des utilisateurs</h5>
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h5 className="card-title mb-0">Liste des utilisateurs</h5>
+                <div className="d-flex gap-2">
+                  <div className="input-group" style={{ width: '250px' }}>
+                    <span className="input-group-text">
+                      <FaSearch />
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Rechercher par nom..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <select
+                    className="form-select"
+                    style={{ width: '150px' }}
+                    value={roleFilter}
+                    onChange={(e) => setRoleFilter(e.target.value)}
+                  >
+                    <option value="">Tous les rôles</option>
+                    <option value="admin">Admin</option>
+                    <option value="expert">Expert</option>
+                    <option value="agent">Agent</option>
+                  </select>
+                </div>
+              </div>
+
               <div className="table-responsive">
                 <table className="table table-hover">
                   <thead>
@@ -274,33 +347,41 @@ function Users() {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map(user => (
-                      <tr key={user.id}>
-                        <td>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>
-                          <span
-                            className={`badge bg-${getRoleBadgeColor(user.role)}`}
-                          >
-                            {user.role}
-                          </span>
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-primary me-2"
-                            onClick={() => handleEdit(user)}
-                          >
-                            <FaEdit /> Modifier
-                          </button>
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(user.id)}
-                          >
-                            <FaTrash /> Supprimer
-                          </button>
+                    {filteredUsers.length > 0 ? (
+                      filteredUsers.map(user => (
+                        <tr key={user.id}>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td>
+                            <span
+                              className={`badge bg-${getRoleBadgeColor(user.role)}`}
+                            >
+                              {user.role}
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-sm btn-primary me-2"
+                              onClick={() => handleEdit(user)}
+                            >
+                              <FaEdit /> Modifier
+                            </button>
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() => handleDelete(user.id)}
+                            >
+                              <FaTrash /> Supprimer
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="text-center">
+                          Aucun utilisateur trouvé
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>

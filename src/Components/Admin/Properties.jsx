@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { FaEdit, FaTrash, FaPlus, FaImage } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaImage, FaSearch, FaFilter } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 function Properties() {
   const [properties, setProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
   const [editingProperty, setEditingProperty] = useState(null);
   const [featureInput, setFeatureInput] = useState('');
   const [features, setFeatures] = useState([]);
@@ -14,12 +19,63 @@ function Properties() {
   const [isEquipped, setIsEquipped] = useState(false);
   const [agents, setAgents] = useState([]);
   const [selectedAgentId, setSelectedAgentId] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const fileInputRef = useRef(null);
 
   const API_BASE_URL = 'http://localhost:3001/api/properties';
   const USERS_API_URL = 'http://localhost:3001/api/users';
   const token = localStorage.getItem('authToken');
   const baseUrl = 'http://localhost:3001';
+
+  // 状态顺序映射
+  const statusOrder = {
+    'Active': 'Pending',
+    'Pending': 'Sold',
+    'Sold': 'For Rent',
+    'For Rent': 'Active'
+  };
+
+  // 获取状态类名
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'Active': return 'bg-success';
+      case 'Pending': return 'bg-warning';
+      case 'Sold': return 'bg-secondary';
+      case 'For Rent': return 'bg-primary';
+      default: return 'bg-light';
+    }
+  };
+
+  // 更新状态
+  const handleChangeStatus = async (propertyId, currentStatus) => {
+    if (!token) {
+      setError('Veuillez vous connecter pour modifier le statut');
+      return;
+    }
+
+    try {
+      const newStatus = statusOrder[currentStatus] || currentStatus;
+      const response = await fetch(`${API_BASE_URL}/${propertyId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (!response.ok) {
+        throw new Error('Échec de la mise à jour du statut');
+      }
+
+      // 更新本地状态
+      setProperties(props => 
+        props.map(p => p.id === propertyId ? { ...p, status: newStatus } : p)
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   // Fetch Properties on Mount (including sold properties)
   useEffect(() => {
@@ -41,6 +97,7 @@ function Properties() {
         }
         const data = await response.json();
         setProperties(data);
+        setFilteredProperties(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -49,6 +106,32 @@ function Properties() {
     };
     fetchProperties();
   }, [token]);
+
+  // Filter properties based on search query and filters
+  useEffect(() => {
+    let filtered = [...properties];
+
+    // Apply search query filter
+    if (searchQuery.trim() !== '') {
+      const lowercaseQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter(property =>
+        property.title.toLowerCase().includes(lowercaseQuery) ||
+        property.location.toLowerCase().includes(lowercaseQuery)
+      );
+    }
+
+    // Apply status filter
+    if (statusFilter) {
+      filtered = filtered.filter(property => property.status === statusFilter);
+    }
+
+    // Apply type filter
+    if (typeFilter) {
+      filtered = filtered.filter(property => property.type === typeFilter);
+    }
+
+    setFilteredProperties(filtered);
+  }, [searchQuery, statusFilter, typeFilter, properties]);
 
   // Fetch Agents (users with role "agent") on Mount
   useEffect(() => {
@@ -94,6 +177,18 @@ function Properties() {
       setSelectedAgentId('');
     }
   }, [editingProperty]);
+
+  // Handle Search
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Handle clear all filters
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('');
+    setTypeFilter('');
+  };
 
   // Handle Edit Button
   const handleEdit = (property) => {
@@ -657,7 +752,49 @@ function Properties() {
         <div className="col-md-9">
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title mb-4">Liste des propriétés</h5>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5 className="card-title mb-0">Liste des propriétés</h5>
+                <div className="d-flex gap-2">
+                  <div className="input-group" style={{ maxWidth: '300px' }}>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Rechercher par titre ou emplacement"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                    />
+                    <span className="input-group-text bg-primary text-white">
+                      <FaSearch />
+                    </span>
+                  </div>
+                  <select
+                    className="form-select"
+                    id="statusFilter"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    style={{ maxWidth: '200px' }}
+                  >
+                    <option value="">Filtrer par statut</option>
+                    <option value="Active">Active</option>
+                    <option value="Pending">En attente</option>
+                    <option value="Sold">Vendu</option>
+                    <option value="For Rent">À louer</option>
+                  </select>
+                  <select
+                    className="form-select"
+                    id="typeFilter"
+                    value={typeFilter}
+                    onChange={(e) => setTypeFilter(e.target.value)}
+                    style={{ maxWidth: '200px' }}
+                  >
+                    <option value="">Filtrer par type</option>
+                    <option value="appartement">Appartement</option>
+                    <option value="villa">Villa</option>
+                    <option value="bureau">Bureau</option>
+                  </select>
+                </div>
+              </div>
+
               <div className="table-responsive">
                 <table className="table table-hover">
                   <thead>
@@ -673,58 +810,76 @@ function Properties() {
                     </tr>
                   </thead>
                   <tbody>
-                    {properties.map(property => (
-                      <tr key={property.id}>
-                        <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
-                          {property.title}
-                        </td>
-                        <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
-                          {property.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} DA
-                        </td>
-                        <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
-                          {property.location}
-                        </td>
-                        <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
-                          <span
-                            className={`badge ${
-                              property.status === 'Active' ? 'bg-success' :
-                              property.status === 'Pending' ? 'bg-warning' :
-                              property.status === 'Sold' ? 'bg-secondary' :
-                              property.status === 'For Rent' ? 'bg-primary' :
-                              'bg-light'
-                            }`}
-                          >
-                            {property.status}
-                          </span>
-                        </td>
-                        <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
-                          {property.type}
-                        </td>
-                        <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
-                          {property.equipped ? 'Oui' : 'Non'}
-                        </td>
-                        <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
-                          {getAgentName(property.agent_id)}
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-primary me-2"
-                            onClick={() => handleEdit(property)}
-                          >
-                            <FaEdit /> Modifier
-                          </button>
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(property.id)}
-                          >
-                            <FaTrash /> Supprimer
-                          </button>
+                    {filteredProperties.length > 0 ? (
+                      filteredProperties.map(property => (
+                        <tr key={property.id}>
+                          <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
+                            <Link to={`/listing/${property.id}`} className="text-decoration-none">
+                              {property.title}
+                             </Link>
+                          </td>
+                          <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
+                            {property.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} DA
+                          </td>
+                          <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
+                            {property.location}
+                          </td>
+                          <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
+                            <span
+                              className={`badge ${getStatusClass(property.status)}`}
+                              onClick={() => handleChangeStatus(property.id, property.status)}
+                              role="button"
+                              tabIndex="0"
+                            >
+                              {property.status}
+                            </span>
+                          </td>
+                          <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
+                            {property.type}
+                          </td>
+                          <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
+                            {property.equipped ? 'Oui' : 'Non'}
+                          </td>
+                          <td style={{ textDecoration: property.status === 'Sold' ? 'line-through' : 'none' }}>
+                            {getAgentName(property.agent_id)}
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-sm btn-primary me-2"
+                              onClick={() => handleEdit(property)}
+                            >
+                              <FaEdit /> 
+                            </button>
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() => handleDelete(property.id)}
+                            >
+                              <FaTrash /> 
+                            </button>
+                          </td>
+                        </tr>
+                      )))
+                    : (
+                      <tr>
+                        <td colSpan="8" className="text-center">
+                          {searchQuery || statusFilter || typeFilter ? 'Aucune propriété ne correspond à vos critères de recherche' : 'Aucune propriété disponible'}
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
+
+              {(searchQuery || statusFilter || typeFilter) && (
+                <div className="mt-2 text-muted">
+                  <small>
+                    {filteredProperties.length} {filteredProperties.length > 1 ? 'propriétés trouvées' : 'propriété trouvée'}
+                    {statusFilter ? ` avec statut "${statusFilter}"` : ''}
+                    {typeFilter ? ` de type "${typeFilter}"` : ''}
+                    {searchQuery ? ` contenant "${searchQuery}"` : ''}
+                  </small>
+                </div>
+              )}
             </div>
           </div>
         </div>

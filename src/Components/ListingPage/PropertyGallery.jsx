@@ -1,25 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import './ListingCSS.css';
+import { ChevronLeft, ChevronRight, X, Maximize2 } from 'lucide-react';
+import "./ListingCSS.css";
 
 export default function PropertyGallery() {
   const { id } = useParams();
   const [images, setImages] = useState([]);
-  const [currentImage, setCurrentImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
-  // Add state to store loaded image objects
+  const [selectedImage, setSelectedImage] = useState(null);
   const [loadedImageObjects, setLoadedImageObjects] = useState({});
-
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState('next'); // 'next' or 'prev'
+  
+  const IMAGES_PER_PAGE = 5;
   const BASE_URL = 'http://localhost:3001';
+  const MAX_VISIBLE_DOTS = 7; // Maximum number of visible dots
 
   // Fetch property images
   useEffect(() => {
     const fetchPropertyImages = async () => {
       try {
         setLoading(true);
+        // If this is a demo, use placeholder images
+        if (!id || id === 'demo') {
+          const demoImages = [
+            '/placeholder.svg',
+            '/placeholder.svg',
+            '/placeholder.svg',
+            '/placeholder.svg',
+            '/placeholder.svg',
+            '/placeholder.svg',
+            '/placeholder.svg',
+            '/placeholder.svg'
+          ];
+          setImages(demoImages);
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch(`${BASE_URL}/api/properties/${id}`);
         if (!response.ok) {
           const errorText = await response.text();
@@ -29,7 +49,7 @@ export default function PropertyGallery() {
         const imagePaths = Array.isArray(property.images_path) 
           ? property.images_path 
           : JSON.parse(property.images_path || '[]');
-        const fullImageUrls = imagePaths.map(path => `${BASE_URL}${path}`);
+        const fullImageUrls = imagePaths.map((path) => `${BASE_URL}${path}`);
         setImages(fullImageUrls);
       } catch (err) {
         console.error('Fetch error:', err);
@@ -39,23 +59,15 @@ export default function PropertyGallery() {
       }
     };
 
-    if (id) {
-      fetchPropertyImages();
-    } else {
-      setLoading(false);
-      setError('No property ID provided');
-    }
+    fetchPropertyImages();
   }, [id]);
 
   // Preload images whenever the images array changes
   useEffect(() => {
     if (images.length > 0) {
-      // Create an object to store loaded image objects
       const imageObjects = {};
       
-      // Load each image
       images.forEach((url) => {
-        // Only create a new Image object if we haven't loaded this URL yet
         if (!loadedImageObjects[url]) {
           const img = new Image();
           img.src = url;
@@ -69,105 +81,205 @@ export default function PropertyGallery() {
         }
       });
       
-      // Update state with loaded images
       if (Object.keys(imageObjects).length > 0) {
         setLoadedImageObjects(prev => ({...prev, ...imageObjects}));
       }
     }
   }, [images]);
 
-  // Eagerly preload the next few images when current image changes
-  useEffect(() => {
-    if (images.length > 1) {
-      // Preload next 2 images
-      for (let i = 1; i <= 2; i++) {
-        const nextIndex = (currentImage + i) % images.length;
-        const nextUrl = images[nextIndex];
-        
-        if (nextUrl && !loadedImageObjects[nextUrl]) {
-          const img = new Image();
-          img.src = nextUrl;
-          setLoadedImageObjects(prev => ({...prev, [nextUrl]: img}));
-        }
-      }
+  const openLightbox = (index) => {
+    // Calculate the actual index in the full images array
+    const actualIndex = currentPage * IMAGES_PER_PAGE + index;
+    setSelectedImage(actualIndex);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+    document.body.style.overflow = '';
+  };
+
+  const nextImage = () => {
+    if (selectedImage !== null && images.length > 0) {
+      setSelectedImage((selectedImage + 1) % images.length);
     }
-  }, [currentImage, images, loadedImageObjects]);
+  };
 
-  const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
-  const prevImage = () => setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
-  const toggleOverlay = () => setIsOverlayOpen(!isOverlayOpen);
+  const prevImage = () => {
+    if (selectedImage !== null && images.length > 0) {
+      setSelectedImage((selectedImage - 1 + images.length) % images.length);
+    }
+  };
 
-  if (loading) return <div className="text-center py-5 fw-bold">Loading images...</div>;
-  if (error) return <div className="text-center py-5 text-danger fw-bold">Error: {error}</div>;
-  if (images.length === 0) return <div className="text-center py-5 fw-bold">No images available for this property</div>;
+  const changePage = (pageIndex) => {
+    if (pageIndex >= 0 && pageIndex < totalPages && pageIndex !== currentPage) {
+      // Set transition direction based on target page index
+      setTransitionDirection(pageIndex > currentPage ? 'next' : 'prev');
+      
+      // Start transition
+      setIsTransitioning(true);
+      
+      // After transition starts, change page
+      setTimeout(() => {
+        setCurrentPage(pageIndex);
+        
+        // End transition after a delay to let new content render
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 50);
+      }, 300); // This should match the CSS transition duration
+    }
+  };
 
-  // Use the current image URL
-  const currentImageUrl = images[currentImage] || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+  // Get current page of images
+  const getCurrentPageImages = () => {
+    const startIndex = currentPage * IMAGES_PER_PAGE;
+    return images.slice(startIndex, startIndex + IMAGES_PER_PAGE);
+  };
+
+  const totalPages = Math.ceil(images.length / IMAGES_PER_PAGE);
+  const showPagination = images.length > IMAGES_PER_PAGE;
+
+  // Function to render pagination dots with logic for when there are many pages
+  const renderPaginationDots = () => {
+    // If we have fewer pages than our maximum visible dots, show all dots
+    if (totalPages <= MAX_VISIBLE_DOTS) {
+      return Array.from({ length: totalPages }, (_, i) => (
+        <button
+          key={`page-dot-${i}`}
+          className={`pagination-dot ${i === currentPage ? 'active' : ''}`}
+          onClick={() => changePage(i)}
+          aria-label={`Go to page ${i + 1}`}
+        />
+      ));
+    }
+    
+    // Otherwise, we need to selectively show dots with ellipsis
+    const dots = [];
+    
+    // Always show first dot
+    dots.push(
+      <button
+        key="page-dot-0"
+        className={`pagination-dot ${currentPage === 0 ? 'active' : ''}`}
+        onClick={() => changePage(0)}
+        aria-label="Go to first page"
+      />
+    );
+    
+    // Calculate the range of dots to display around the current dot
+    const range = Math.floor((MAX_VISIBLE_DOTS - 2) / 2); // subtract 2 for first and last dots
+    
+    // Start of range, either after the first dot or adjacent to it
+    let startPage = Math.max(1, currentPage - range);
+    
+    // End of range, either before the last dot or adjacent to it
+    let endPage = Math.min(totalPages - 2, currentPage + range);
+    
+    // Adjust if we're too close to either end
+    if (currentPage < range + 1) {
+      endPage = Math.min(totalPages - 2, MAX_VISIBLE_DOTS - 3);
+    } else if (currentPage > totalPages - (range + 2)) {
+      startPage = Math.max(1, totalPages - (MAX_VISIBLE_DOTS - 2));
+    }
+    
+    // If the startPage is not right after the first dot, add an ellipsis
+    if (startPage > 1) {
+      dots.push(
+        <span key="ellipsis-start" className="pagination-ellipsis">…</span>
+      );
+    }
+    
+    // Add the range of dots
+    for (let i = startPage; i <= endPage; i++) {
+      dots.push(
+        <button
+          key={`page-dot-${i}`}
+          className={`pagination-dot ${i === currentPage ? 'active' : ''}`}
+          onClick={() => changePage(i)}
+          aria-label={`Go to page ${i + 1}`}
+        />
+      );
+    }
+    
+    // If the endPage is not right before the last dot, add an ellipsis
+    if (endPage < totalPages - 2) {
+      dots.push(
+        <span key="ellipsis-end" className="pagination-ellipsis">…</span>
+      );
+    }
+    
+    // Always show last dot
+    dots.push(
+      <button
+        key={`page-dot-${totalPages - 1}`}
+        className={`pagination-dot ${currentPage === totalPages - 1 ? 'active' : ''}`}
+        onClick={() => changePage(totalPages - 1)}
+        aria-label="Go to last page"
+      />
+    );
+    
+    return dots;
+  };
+
+  if (loading) return <div className="flex justify-center items-center h-48 text-lg font-bold">Loading images...</div>;
+  if (error) return <div className="flex justify-center items-center h-48 text-lg font-bold text-red-500">Error: {error}</div>;
+  if (images.length === 0) return <div className="flex justify-center items-center h-48 text-lg font-bold">No images available for this property</div>;
+
+  const gridTransitionClass = isTransitioning 
+    ? `grid-transition ${transitionDirection === 'next' ? 'slide-out-left' : 'slide-out-right'}` 
+    : '';
 
   return (
     <>
-      <div className="gallery-container">
-        <div className="main-image-container">
-          <img 
-            src={currentImageUrl} 
-            alt={`Property image ${currentImage + 1}`} 
-            className="main-image"
-            onClick={toggleOverlay}
-            // Add a key to help React identify this element uniquely
-            key={`carousel-${currentImageUrl}`}
-          />
-          
-          <button 
-            onClick={prevImage} 
-            className="nav-button prev-button"
-            aria-label="Previous image"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          
-          <button 
-            onClick={nextImage} 
-            className="nav-button next-button"
-            aria-label="Next image"
-          >
-            <ChevronRight size={24} />
-          </button>
-          
-          <div className="image-counter">
-            {currentImage + 1} / {images.length}
-          </div>
-          
-          <div className="dots-container">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentImage(index)}
-                className={`dot ${currentImage === index ? 'active' : ''}`}
-                aria-label={`Go to image ${index + 1}`}
-              />
-            ))}
-          </div>
+      <div className="property-grid-container">
+        <div className={`property-grid ${gridTransitionClass}`}>
+          {getCurrentPageImages().map((image, index) => (
+            <div 
+              key={`grid-image-${currentPage}-${index}`}
+              className={`grid-item ${index === 0 ? "grid-item-featured" : ""}`}
+              onClick={() => openLightbox(index)}
+            >
+              <div className="relative w-full h-full overflow-hidden rounded-md group">
+                <img 
+                  src={image} 
+                  alt={`Property ${currentPage * IMAGES_PER_PAGE + index + 1}`} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                  <Maximize2 className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={24} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+        
+        {/* Dot Pagination */}
+        {showPagination && (
+          <div className="pagination-controls">
+            <div className="pagination-dots">
+              {renderPaginationDots()}
+            </div>
+          </div>
+        )}
       </div>
 
-      {isOverlayOpen && (
-        <div className="fullscreen-overlay" onClick={toggleOverlay}>
+      {/* Fullscreen Overlay */}
+      {selectedImage !== null && (
+        <div className="fullscreen-overlay" onClick={closeLightbox}>
           <div className="fullscreen-content" onClick={(e) => e.stopPropagation()}>
             <img 
-              src={currentImageUrl} 
-              alt={`Property image ${currentImage + 1}`} 
-              className="fullscreen-image" 
-              key={`fullscreen-${currentImageUrl}`}
+              src={images[selectedImage]} 
+              alt={`Property image ${selectedImage + 1}`} 
+              className="fullscreen-image"
             />
-            
             <button 
               className="close-button"
-              onClick={toggleOverlay}
+              onClick={closeLightbox}
               aria-label="Close gallery"
             >
-              <X size={32} />
+              <X size={24} />
             </button>
-            
             <button 
               className="fullscreen-nav prev-fullscreen"
               onClick={prevImage}
@@ -175,7 +287,6 @@ export default function PropertyGallery() {
             >
               <ChevronLeft size={48} />
             </button>
-            
             <button 
               className="fullscreen-nav next-fullscreen"
               onClick={nextImage}
@@ -183,9 +294,8 @@ export default function PropertyGallery() {
             >
               <ChevronRight size={48} />
             </button>
-            
             <div className="fullscreen-counter">
-              {currentImage + 1} / {images.length}
+              {selectedImage + 1} / {images.length}
             </div>
           </div>
         </div>

@@ -116,7 +116,8 @@ export default function Navbar() {
       if (decoded.role === 'expert' || decoded.role === 'agent') {
         navigate('/inbox');
       } else {
-        navigate('/');
+        // navigate('/');
+         window.location.href = '/';
       }
     } catch (error) {
       console.error("Error decoding token:", error);

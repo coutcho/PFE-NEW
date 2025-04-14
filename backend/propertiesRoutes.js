@@ -71,9 +71,9 @@ router.get('/', async (req, res) => {
       query += ' WHERE ' + conditions.join(' AND ');
     }
 
-    console.log('Executing query:', query, 'with values:', values);
+    
     const result = await pool.query(query, values);
-    console.log('Query result:', result.rows);
+    
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching properties:', err);
@@ -109,7 +109,7 @@ router.get('/:id(\\d+)', async (req, res) => {
       [id]
     );
     if (result.rows.length === 0) return res.status(404).json({ message: 'Property not found' });
-    console.log('Fetched property:', result.rows[0]);
+    
     res.json(result.rows[0]);
   } catch (err) {
     console.error('Error fetching property:', err);
@@ -148,7 +148,7 @@ router.post('/', authenticateToken, upload, async (req, res) => {
         parsedAgentId,
       ]
     );
-    console.log('Inserted property:', result.rows[0]);
+    
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Error adding property:', err);
@@ -162,26 +162,55 @@ router.post('/', authenticateToken, upload, async (req, res) => {
 // **PUT /api/properties/:id** - Update a property (numeric IDs only)
 router.put('/:id(\\d+)', authenticateToken, upload, async (req, res) => {
   const { id } = req.params;
-  const { title, price, location, type, bedrooms, bathrooms, etage, square_footage, description, features, status, lat, long, images_path, equipped, agent_id } = req.body;
-
-  let existingImages = [];
-  try {
-    existingImages = images_path ? JSON.parse(images_path) : [];
-  } catch (err) {
-    console.error('Error parsing images_path:', err);
-    existingImages = [];
-  }
-
-  const newImages = req.files && req.files.length > 0 ? req.files.map(file => `/uploads/${file.filename}`) : [];
-  const updatedImagesPath = [...existingImages, ...newImages];
-  const parsedEquipped = equipped === 'true' ? true : equipped === 'false' ? false : false;
-  const parsedAgentId = agent_id ? parseInt(agent_id) : null;
+  const { 
+    title, price, location, type, bedrooms, bathrooms, etage, 
+    square_footage, description, features, status, lat, long, 
+    images_path, equipped, agent_id 
+  } = req.body;
 
   try {
+    // Check if only status is being updated
+    if (status && Object.keys(req.body).length === 1) {
+      // Validate status
+      if (!['Active', 'Pending', 'Sold', 'For Rent'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status' });
+      }
+
+      // Update only the status
+      const statusUpdateResult = await pool.query(
+        'UPDATE properties SET status = $1 WHERE id = $2 RETURNING *',
+        [status, id]
+      );
+
+      if (statusUpdateResult.rowCount === 0) {
+        return res.status(404).json({ error: 'Property not found' });
+      }
+
+      
+      return res.status(200).json({ 
+        message: 'Status updated successfully', 
+        property: statusUpdateResult.rows[0] 
+      });
+    }
+
+    // Handle full property update
+    let existingImages = [];
+    try {
+      existingImages = images_path ? JSON.parse(images_path) : [];
+    } catch (err) {
+      console.error('Error parsing images_path:', err);
+      existingImages = [];
+    }
+
+    const newImages = req.files && req.files.length > 0 ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    const updatedImagesPath = [...existingImages, ...newImages];
+    const parsedEquipped = equipped === 'true' ? true : equipped === 'false' ? false : false;
+    const parsedAgentId = agent_id ? parseInt(agent_id) : null;
+
     const parsedFeatures = typeof features === 'string' ? JSON.parse(features) : features;
 
-    const result = await pool.query(
-      'UPDATE properties SET title = $1, price = $2, location = $3, type = $4, bedrooms = $5, bathrooms = $6, etage = $7, square_footage = $8, description = $9, features = $10, status = $11, lat = $12, long = $13, images_path = $14, equipe = $15, user_id = $16 WHERE id = $17 RETURNING id, title, price, location, type, bedrooms, bathrooms, etage, square_footage, description, features, status, lat, long, images_path, equipe AS equipped, user_id AS agent_id, created_at',
+    const updateResult = await pool.query(
+      'UPDATE properties SET title = $1, price = $2, location = $3, type = $4, bedrooms = $5, bathrooms = $6, etage = $7, square_footage = $8, description = $9, features = $10, status = $11, lat = $12, long = $13, images_path = $14, equipe = $15, user_id = $16 WHERE id = $17 RETURNING *',
       [
         title,
         parseInt(price),
@@ -202,15 +231,19 @@ router.put('/:id(\\d+)', authenticateToken, upload, async (req, res) => {
         id,
       ]
     );
-    if (result.rowCount === 0) return res.status(404).json({ error: 'Property not found' });
-    console.log('Updated property:', result.rows[0]);
-    res.json(result.rows[0]);
+
+    if (updateResult.rowCount === 0) {
+      return res.status(404).json({ error: 'Property not found' });
+    }
+
+    
+    res.status(200).json(updateResult.rows[0]);
   } catch (err) {
     console.error('Error updating property:', err);
     if (err.code === '23503') {
       return res.status(400).json({ error: 'Invalid agent ID: agent does not exist' });
     }
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

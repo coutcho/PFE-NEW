@@ -53,7 +53,10 @@ const NewestListings = () => {
         }
 
         const data = await response.json();
-        setProperties(data);
+        
+        // Filter out properties with "Sold" status
+        const filteredProperties = data.filter(property => property.status !== 'Sold');
+        setProperties(filteredProperties);
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -63,7 +66,6 @@ const NewestListings = () => {
       }
     };
     fetchProperties();
-    
   }, []);
 
   // Handle keyboard navigation for accessibility

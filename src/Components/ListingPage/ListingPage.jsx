@@ -54,7 +54,7 @@ function ListingPage() {
         <main className="pt-0">
           <PropertyGallery /> {/* Add property prop if needed */}
           
-          <div className="container py-4">
+          <div className="container pb-4 pt-0">
             <div className="row">
               <div className="col-lg-8">
                 <PropertyDetails property={property} />
