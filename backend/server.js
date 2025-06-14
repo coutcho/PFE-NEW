@@ -25,7 +25,7 @@ const app = express();
 const port = 3001;
 
 app.use(cors({
-  origin: 'https://pfe-new-production.up.railway.app/', // Match your frontend's origin (Vite default)
+  origin: 'https://pfe-new-production.up.railway.app', // Match your frontend's origin (Vite default)
   credentials: true,
 }));
 app.use(express.json());
