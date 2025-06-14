@@ -1,0 +1,45 @@
+.property-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+  
+  .property-card.selected {
+    border-width: 2px;
+    transform: scale(1.02);
+    background: #f8fafc;
+  }
+  
+  .property-card:hover:not(.selected) {
+    transform: translateY(-2px);
+    border-color: #d1d5db;
+  }
+  
+  .border-primary {
+    border-color: #2563eb; /* Adjust to your primary color */
+  }
+  
+  .shadow-sm {
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+  
+  .shadow-md {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: ease-in-out;
+    transition-duration: 200ms;
+  }
+
+  @media (max-width: 767.98px) {
+    .map-column {
+      height: 50vh;
+    }
+  }

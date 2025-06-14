@@ -1,0 +1,139 @@
+/* Main carousel container */
+.carousel-container {
+  margin: 0 50px;
+  overflow: visible;
+}
+
+/* Slide styles */
+.carousel-slide {
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Property card wrapper */
+.property-card-wrapper {
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.property-card-wrapper:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Featured badge */
+.featured-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 6px rgba(255, 126, 95, 0.4);
+  z-index: 2;
+}
+
+/* Navigation arrows */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.carousel-arrow:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.carousel-arrow:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-arrow-prev {
+  left: -50px;
+}
+
+.carousel-arrow-next {
+  right: -50px;
+}
+
+/* Dots navigation */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #dee2e6;
+  border: none;
+  margin: 0 5px;
+  padding: 0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.carousel-dot:hover {
+  background-color: #adb5bd;
+}
+
+.carousel-dot-active {
+  background-color: #007bff;
+  width: 24px;
+  border-radius: 10px;
+}
+
+.carousel-dot:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .carousel-container {
+    margin: 0 20px;
+  }
+  
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .carousel-arrow-prev {
+    left: -18px;
+  }
+  
+  .carousel-arrow-next {
+    right: -18px;
+  }
+}

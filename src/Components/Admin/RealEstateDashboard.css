@@ -1,0 +1,19 @@
+.border-dashed {
+    border-style: dashed;
+  }
+  
+  .trend-line svg {
+    margin-bottom: 10px;
+  }
+  
+  .trend-up path {
+    stroke: #28a745;
+  }
+  
+  .trend-down path {
+    stroke: #dc3545;
+  }
+  
+  .trend-neutral path {
+    stroke: #007bff;
+  }

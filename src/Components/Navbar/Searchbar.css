@@ -1,0 +1,46 @@
+/* Sidebar Styling */
+.filter-sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px; /* Start off-screen to the left */
+    width: 300px; /* Fixed width */
+    height: 100vh;
+    background-color: #212529; /* Dark background */
+    color: white;
+    transition: transform 0.3s ease-in-out; /* Smooth animation */
+    z-index: 1000;
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  }
+  
+  .filter-sidebar.open {
+    transform: translateX(300px); /* Slide into view from the left */
+    padding: 10px !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Prevent horizontal scrolling when the sidebar is open */
+  body.no-scroll {
+    overflow-x: hidden;
+  }
+  
+  /* Overlay Styling */
+  .filter-overlay {
+    display: none; /* Hidden by default */
+  }
+  
+  .filter-sidebar.open + .filter-overlay {
+    display: block; /* Show overlay when sidebar is open */
+  }
+  /* Ensure all content inside the sidebar is aligned to the left */
+  .list-group {
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-shadow: none !important;
+    padding: 0 !important;
+  }
+  
+  .list-group-item-action:hover {
+    background-color: #f8f9fa;
+  }
