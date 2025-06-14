@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import './SearchBar.css';
+import './Searchbar.css';
 import FilterSidebar from './FilterSidebar';
 
 export default function SearchBar({ onApplyFilters }) {

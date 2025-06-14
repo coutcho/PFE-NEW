@@ -25,7 +25,7 @@ const app = express();
 const port = 3001;
 
 app.use(cors({
-  origin: 'http://localhost:5173', // Match your frontend's origin (Vite default)
+  origin: 'https://pfe-new-production.up.railway.app/', // Match your frontend's origin (Vite default)
   credentials: true,
 }));
 app.use(express.json());
@@ -70,7 +70,7 @@ passport.use(
     {
       clientID: "1376129730264892",
       clientSecret: "110e3a97476f4b94f317276a86388508",
-      callbackURL: "http://localhost:3001/auth/facebook/callback",
+      callbackURL: "https://pfe-new-production.up.railway.app/auth/facebook/callback",
       profileFields: ["id", "displayName", "emails"],
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -98,7 +98,7 @@ passport.use(
     {
       clientID: "162828373124-04ct27vn8oh29kll5gfb7jcnqe082o7f.apps.googleusercontent.com",
       clientSecret: "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",
-      callbackURL: "http://localhost:3001/auth/google/callback",
+      callbackURL: "https://pfe-new-production.up.railway.app/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -253,7 +253,7 @@ app.get(
       "your-secret-key",
       { expiresIn: "1h" }
     );
-    res.redirect(`http://localhost:5173/auth/callback?token=${token}`);
+    res.redirect(`https://pfe-new-production.up.railway.app/auth/callback?token=${token}`);
   }
 );
 
@@ -273,7 +273,7 @@ app.get(
       "your-secret-key",
       { expiresIn: "1h" }
     );
-    res.redirect(`http://localhost:5173/auth/callback?token=${token}`);
+    res.redirect(`https://pfe-new-production.up.railway.app/auth/callback?token=${token}`);
   }
 );
 
@@ -300,7 +300,7 @@ app.post("/api/forgot-password", async (req, res) => {
       [user.id, resetToken, new Date(Date.now() + 3600000)]
     );
 
-    const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
+    const resetUrl = `https://pfe-new-production.up.railway.app/reset-password?token=${resetToken}`;
     const mailOptions = {
       from: "rayanos.adjinatos@gmail.com",
       to: email,
@@ -392,5 +392,5 @@ app.use('/api/inquiries', inquiriesRoutes);
 app.use('/api/home-values', homeValuesRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running on https://pfe-new-production.up.railway.app/${port}`);
 });
